@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField]
 	private Animator animator;
 
-	private bool isGrounded = false;
+	private bool isGrounded = true;
 	private bool isRun = false;
 	private bool isJump = false;
 
@@ -20,12 +20,17 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private Transform[ ] groundPoints;
 	
-	public float pointRadius;
+	[SerializeField]
+    private Vector3 pointRadius;
 
-	public float jumpForce;
-    public float jumpTime;
-    public float runSpeed;
-	private float getAxis;
+    [SerializeField]
+	private float jumpForce;
+
+    [SerializeField]
+    private float runSpeed;
+
+    [SerializeField]
+	private float getAxisHorizontal;
 
 	// Use this for initialization
 	void Awake( ) {
@@ -38,61 +43,54 @@ public class PlayerController : MonoBehaviour {
   
 	void FixedUpdate( ) {
         
-		getAxis = Input.GetAxis( "Horizontal" );
+		getAxisHorizontal = Input.GetAxis( "Horizontal" );
 
         isGrounded = IsGrounded( );
-
         HandleMovement( );
-		Flip( getAxis );
+		Flip( getAxisHorizontal );
 		ResetValues( );
 	
 	}
 
 	// Update is called once per frame
 	void Update( ) {
+        
 		HandleInput( );
+        animator.SetFloat( "jumpSpeed", rb.velocity.y ); 
         
 	}
 
-	private void Flip( float getAxis) {
-		const int DIRECTION = -1;
-			if( getAxis > 0 && facingRight == false || getAxis < 0 && facingRight == true ) {
+	private void Flip( float axisVaule ) {
+		const int flipDirection = -1;
+			if( axisVaule > 0 && facingRight == false || axisVaule < 0 && facingRight == true ) {
 				facingRight = !facingRight;
 
 				Vector3 theScale = transform.localScale;
 
-				theScale.x *= DIRECTION;
+				theScale.x *= flipDirection;
 
 				transform.localScale = theScale;
 			}
 	}
 	private void HandleInput( ) {
-		if ( getAxis != 0 ) {
+		if ( getAxisHorizontal != 0 ) {
 			isRun = true;
 		}
 		if ( Input.GetKeyDown( KeyCode.Space ) ) {
 			isJump = true;
-          
-		}
-        
-	
+		} 
 	}
 	private void HandleMovement( ) {
 		if( isRun ) {
-			rb.velocity = new Vector2( getAxis * runSpeed, rb.velocity.y);
-			animator.SetFloat ( "speed", Mathf.Abs( getAxis ) );
+			rb.velocity = new Vector2( getAxisHorizontal * runSpeed, rb.velocity.y);
+			animator.SetFloat ( "speed", Mathf.Abs( getAxisHorizontal ) );
 		}
 		if ( isJump && isGrounded  ) {
 			isGrounded = false;
+            rb.AddForce( Vector2.up * jumpForce ); 
+            animator.SetBool( "isGrounded", isGrounded );
             
-			rb.AddForce ( new Vector2 ( 0, jumpForce ) ); 
-           
-           
-		} else {
-           
-        }
-       
-      
+		}
 	}
 
 	private void ResetValues( ) {
@@ -101,9 +99,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
     private bool IsGrounded( ) {
+        animator.SetBool( "isGrounded", isGrounded );
         if( rb.velocity.y <= 0 ) {
             foreach( Transform point in groundPoints ) {
-                Collider2D[ ] colliders = Physics2D.OverlapAreaAll( point.position, point.position, whatIsGround );
+                Collider2D[ ] colliders = Physics2D.OverlapAreaAll( point.position, point.position + pointRadius, whatIsGround );
                 
                 for( int i = 0; i < colliders.Length; i++ ) {
                     if( colliders[ i ].gameObject != gameObject ) {
@@ -115,4 +114,5 @@ public class PlayerController : MonoBehaviour {
         return false;
     }
 
+  
 }
