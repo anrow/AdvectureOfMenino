@@ -9,16 +9,23 @@ public class PlayerController : MonoBehaviour {
 	private Animator animator;
 
 	private bool isGrounded = true;
-	private bool isRun = false;
+    private bool isRun = false;
 	private bool isJump = false;
-
 	private bool facingRight;
+
+    public bool isInvincible = false;
+
+    [SerializeField]
+    private HittingSystem hittingSystem;
+
+    [SerializeField]
+    private InimigoController Inimigo;
 
 	[SerializeField]
 	private LayerMask whatIsGround;
 
     [SerializeField]
-    private Transform[ ] groundPoints;
+    public Transform[ ] groundPoints;
 	
 	[SerializeField]
     private Vector3 pointRadius;
@@ -27,7 +34,13 @@ public class PlayerController : MonoBehaviour {
 	private float jumpForce;
 
     [SerializeField]
+    private float jumpForceRate;
+
+    [SerializeField]
     private float runSpeed;
+
+    [SerializeField]
+    private LayerMask whatIsEnemy;
 
     [SerializeField]
 	private float getAxisHorizontal;
@@ -35,9 +48,14 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Awake( ) {
 		rb = gameObject.GetComponent<Rigidbody2D>( );
+
 		animator = gameObject.GetComponentInChildren<Animator>( );
-		facingRight = true;
+
+        Inimigo = GameObject.FindObjectOfType<InimigoController>( );
+
+        hittingSystem = GameObject.FindObjectOfType<HittingSystem>( );
         
+		facingRight = true;
 	}
   
   
@@ -46,13 +64,18 @@ public class PlayerController : MonoBehaviour {
 		getAxisHorizontal = Input.GetAxis( "Horizontal" );
 
         isGrounded = IsGrounded( );
+
+        if( rb.velocity.y <= 0 ) {
+            IsAttackHitted( );
+        }
         HandleMovement( );
+
 		Flip( getAxisHorizontal );
+
 		ResetValues( );
 	
 	}
 
-	// Update is called once per frame
 	void Update( ) {
         
 		HandleInput( );
@@ -89,7 +112,6 @@ public class PlayerController : MonoBehaviour {
 			isGrounded = false;
             rb.AddForce( Vector2.up * jumpForce ); 
             animator.SetBool( "isGrounded", isGrounded );
-            
 		}
 	}
 
@@ -97,22 +119,49 @@ public class PlayerController : MonoBehaviour {
 		isRun = false;
 		isJump = false;
 	}
-
     private bool IsGrounded( ) {
-        animator.SetBool( "isGrounded", isGrounded );
         if( rb.velocity.y <= 0 ) {
-            foreach( Transform point in groundPoints ) {
-                Collider2D[ ] colliders = Physics2D.OverlapAreaAll( point.position, point.position + pointRadius, whatIsGround );
-                
-                for( int i = 0; i < colliders.Length; i++ ) {
-                    if( colliders[ i ].gameObject != gameObject ) {
-                        return true;
-                    }
-                } 
+            animator.SetBool( "isGrounded", isGrounded );
+            if( hittingSystem.IsHitted( groundPoints, whatIsGround ) ) {
+                isGrounded = true;
+                return true;
             }
         }
         return false;
     }
+    private bool IsAttackHitted( ) {
+        if( hittingSystem.IsHitted( groundPoints, whatIsEnemy ) ) {
+            Inimigo.Dead( ); 
+            rb.AddForce( Vector2.up * jumpForce * jumpForceRate );
+        }
+        return false;
+    }
+ 
+    public void SetInvincibleStatus( ) {
+        if( !isInvincible ) {
+            isInvincible = true;
+            StartCoroutine( InvincibleStatus( ) );
+        }
+    }
 
-  
+    //無敵状態
+    private IEnumerator InvincibleStatus( ) {
+       
+        int damageTimeCount = 10;
+
+		while ( damageTimeCount > 0 ) {
+			//透明にする
+			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 0 );
+			//0.05秒待つ
+			yield return new WaitForSeconds( 0.05f );
+			//元に戻す
+			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 1 );
+			//0.05秒待つ
+			yield return new WaitForSeconds( 0.05f );
+			damageTimeCount--;
+		}
+
+        isInvincible = false;
+    }
+   
 }

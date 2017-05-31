@@ -4,19 +4,31 @@ using System.Collections;
 public class CameraController : MonoBehaviour {
 
 	[SerializeField]
-	private GameObject player;
+	private PlayerController player;
 
-	private Vector3 offset;
+	[SerializeField]
+	private float offsetX;
+
+	[SerializeField]
+	private float offsetY;
+
+	public bool isFllowing;
 
 	// Use this for initialization
 	void Start () {
-		player = GameObject.FindGameObjectWithTag ("Player");
+		player = GameObject.FindObjectOfType<PlayerController>( );
 
-		offset = new Vector3 (0, 0, -6);
+		isFllowing = true;
+
+		offsetY = 1.0f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		transform.position = player.transform.position + offset;
+		if( isFllowing ) {
+			transform.position = new Vector3( player.transform.position.x + offsetX,
+										  	  player.transform.position.y + offsetY,
+			                              	  transform.position.z );
+		}
 	}
 }

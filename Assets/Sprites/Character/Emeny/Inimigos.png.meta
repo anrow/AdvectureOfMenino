@@ -1,11 +1,11 @@
 fileFormatVersion: 2
 guid: ddbc7d1c246d1bc42aabca0602ca50a0
-timeCreated: 1485992920
-licenseType: Free
+timeCreated: 1495154087
+licenseType: Pro
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Inimigos_0
-    21300002: Inimigos_1
+    21300000: Inimigos_1
+    21300002: Inimigos_2
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -128,7 +128,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Inimigos_0
+      name: Inimigos_1
       rect:
         serializedVersion: 2
         x: 2
@@ -136,12 +136,12 @@ TextureImporter:
         width: 72
         height: 36
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
     - serializedVersion: 2
-      name: Inimigos_1
+      name: Inimigos_2
       rect:
         serializedVersion: 2
         x: 82
@@ -149,7 +149,7 @@ TextureImporter:
         width: 75
         height: 31
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       tessellationDetail: 0
