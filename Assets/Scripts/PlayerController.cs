@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour {
     private HittingSystem hittingSystem;
 
     [SerializeField]
-    private InimigoController Inimigo;
+    private InimigoController[ ] inimigos;
 
 	[SerializeField]
 	private LayerMask whatIsGround;
@@ -45,16 +45,21 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
 	private float getAxisHorizontal;
 
+	[SerializeField]
+	private BoxCollider2D attackCol;
+
 	// Use this for initialization
 	void Awake( ) {
 		rb = gameObject.GetComponent<Rigidbody2D>( );
 
 		animator = gameObject.GetComponentInChildren<Animator>( );
 
-        Inimigo = GameObject.FindObjectOfType<InimigoController>( );
+        inimigos = GameObject.FindObjectsOfType<InimigoController>( );
 
         hittingSystem = GameObject.FindObjectOfType<HittingSystem>( );
         
+		attackCol = gameObject.GetComponentInChildren<BoxCollider2D>( );
+
 		facingRight = true;
 	}
   
@@ -130,10 +135,12 @@ public class PlayerController : MonoBehaviour {
         return false;
     }
     private bool IsAttackHitted( ) {
+
+			
         if( hittingSystem.IsHitted( groundPoints, whatIsEnemy ) ) {
-            Inimigo.Dead( ); 
+			
             rb.AddForce( Vector2.up * jumpForce * jumpForceRate );
-        }
+		}
         return false;
     }
  
