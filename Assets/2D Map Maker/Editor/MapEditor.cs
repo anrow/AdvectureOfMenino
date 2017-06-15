@@ -182,8 +182,6 @@ public class MapEditor : EditorWindow {
 					//only finds prefabs that are not nested
 					if (g.transform.parent != null && g.transform.parent.GetComponent<Layer> ().priority == curLayer) {
 						if (g.transform.parent.parent == null) {
-					
-					
 							return g;
 						}
 					}
@@ -198,30 +196,22 @@ public class MapEditor : EditorWindow {
 		}
 
 		//PerformCheks for artificial
-
-	
 		return null;
 	}
 
-	void OnDisable()
-	{
-
+	void OnDisable( ){
 		Tools.current=lasTool;
 		DestroyImmediate(GameObject.Find("gizmoTile"));  
 		DestroyImmediate(GameObject.Find("gizmoCursor"));
 		SceneView.onSceneGUIDelegate -= SceneGUI;
-	
 	}
 
 
 	//Happens Everytime the window is focused (clicked)
-	void OnFocus()
-	{
+	void OnFocus( ) {
 		//Check for new prefabs
-
-		 
-		LoadPrefabs ();
-		ShowLog ("MapMaker Activated");
+		LoadPrefabs( );
+		ShowLog( "MapMaker Activated" );
 		if(Tools.current!=Tool.None) 
 		    lasTool = Tools.current;
         
@@ -440,8 +430,6 @@ public class MapEditor : EditorWindow {
 		CursorUpdate ();
 
 		Repaint ();
-
-
 	}
 
 	//Rotates gizmoTil]
@@ -1039,11 +1027,7 @@ public class MapEditor : EditorWindow {
 			}
 
 		}
-
-
-
 	}
-
 	void ReadList()
 	{
 		foreach (var item in layers) {
@@ -1116,19 +1100,9 @@ public class MapEditor : EditorWindow {
 			} else {
 				item.transform.name += " (" + item.priority + ")";
 			}
-
-
-
-
-
 		}
-
-
 	}
-
-
-	Vector2 alignId2Vec(int alignIndex)
-	{
+	Vector2 alignId2Vec(int alignIndex) {
 		Vector2 aux;
 
 		aux.x = alignIndex % 3 -1;
@@ -1137,7 +1111,7 @@ public class MapEditor : EditorWindow {
 		ShowLog (aux);
 		return aux;
 
-		}
+    }
 
 
 	static void ChangeGizmoTile()
