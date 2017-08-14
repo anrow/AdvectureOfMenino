@@ -17,6 +17,12 @@ public class PlayerEventManager : MonoBehaviour {
     [SerializeField]
     private CameraController cameraController;
 
+    [SerializeField]
+    private HittingSystem hittingSystem;
+
+    [SerializeField]
+    private bool isInvincible = false;
+
 	void Start( ) {
 
 		particle = GameObject.FindObjectOfType<ParticleEventManager>( );
@@ -27,10 +33,37 @@ public class PlayerEventManager : MonoBehaviour {
 
         cameraController = GameObject.FindObjectOfType<CameraController>( );
 
+        hittingSystem = GameObject.FindObjectOfType<HittingSystem>( );
+
 	}
 
-	void OnTriggerEnter2D( Collider2D other ) {
-        switch( other.tag ) {
+    public void SetInvincibleStatus( ) {
+        if( isInvincible == true ) {
+            StartCoroutine( InvincibleStatus( ) );
+        }
+    }
+
+    //無敵状態
+    private IEnumerator InvincibleStatus( ) {
+        
+        int damageTimeCount = 10;
+
+		while ( damageTimeCount > 0 ) {
+			//透明にする
+			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 0 );
+			//0.05秒待つ
+			yield return new WaitForSeconds( 0.05f );
+			//元に戻す
+			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 1 );
+			//0.05秒待つ
+			yield return new WaitForSeconds( 0.05f );
+			damageTimeCount--;
+		}
+        
+    }
+
+	void OnCollisionEnter2D( Collision2D other ) {
+        switch( other.collider.tag ) {
             case "Spike":
                 particle.SetDamageParticle( );
                 Destroy( gameObject );
@@ -42,16 +75,26 @@ public class PlayerEventManager : MonoBehaviour {
                 Destroy( gameObject );
                 SceneManager.LoadScene( "Main" );
                 break;
+            case "Enemy":
+                break;
+        }
+	}
 
-			case "Enemy":
-                if( !player.isInvincible ) {
-                    player.SetInvincibleStatus( );
-                    particle.SetDamageParticle( );
-                }
+    void OnCollisionStay2D( Collision2D other) {
+        switch ( other.collider.tag ) {
+            case "Enemy":
+                isInvincible = true;
+                SetInvincibleStatus( );
                 break;
         }
 
-	}
-    
-  
+    }
+     void OnTriggerExit2D( Collider2D other) {
+        switch ( other.tag ) {
+            case "Enemy":
+                other.isTrigger = false;
+                isInvincible = false;
+                break;
+        }
+    }
 }

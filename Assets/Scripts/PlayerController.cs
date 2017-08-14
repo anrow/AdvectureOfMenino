@@ -45,9 +45,6 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
 	private float getAxisHorizontal;
 
-	[SerializeField]
-	private BoxCollider2D attackCol;
-
 	// Use this for initialization
 	void Awake( ) {
 		rb = gameObject.GetComponent<Rigidbody2D>( );
@@ -58,8 +55,6 @@ public class PlayerController : MonoBehaviour {
 
         hittingSystem = GameObject.FindObjectOfType<HittingSystem>( );
         
-		attackCol = gameObject.GetComponentInChildren<BoxCollider2D>( );
-
 		facingRight = true;
 	}
   
@@ -134,41 +129,11 @@ public class PlayerController : MonoBehaviour {
         }
         return false;
     }
-    private bool IsAttackHitted( ) {
-
-			
+    public  bool IsAttackHitted( ) {
         if( hittingSystem.IsHitted( groundPoints, whatIsEnemy ) ) {
-			
             rb.AddForce( Vector2.up * jumpForce * jumpForceRate );
+            return true;
 		}
         return false;
     }
- 
-    public void SetInvincibleStatus( ) {
-        if( !isInvincible ) {
-            isInvincible = true;
-            StartCoroutine( InvincibleStatus( ) );
-        }
-    }
-
-    //無敵状態
-    private IEnumerator InvincibleStatus( ) {
-       
-        int damageTimeCount = 10;
-
-		while ( damageTimeCount > 0 ) {
-			//透明にする
-			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 0 );
-			//0.05秒待つ
-			yield return new WaitForSeconds( 0.05f );
-			//元に戻す
-			gameObject.GetComponentInChildren<SpriteRenderer>( ).color = new Color( 1, 1, 1, 1 );
-			//0.05秒待つ
-			yield return new WaitForSeconds( 0.05f );
-			damageTimeCount--;
-		}
-
-        isInvincible = false;
-    }
-   
 }

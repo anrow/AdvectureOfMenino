@@ -76,7 +76,7 @@ public class InimigoController : MonoBehaviour {
 		
     public void Dead( ) {
 		particle.SetEnemyParticle( );
-        Destroy( gameObject );
+        gameObject.SetActive( false );
     }
 
   
